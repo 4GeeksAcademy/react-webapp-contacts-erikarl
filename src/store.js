@@ -1,4 +1,4 @@
-import { createContext, useReducer, useContext } from "react";
+import { createContext, useReducer, useContext, createElement } from "react";
 import { 
   newAgenda,
   getContacts, 
@@ -45,13 +45,13 @@ const reducer = (state, action) => {
 // --- Creación del contexto ---
 const StoreContext = createContext();
 
-// --- Provider ---
+// --- Provider (sin JSX) ---
 export const StoreProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  return (
-    <StoreContext.Provider value={{ state, dispatch }}>
-      {children}
-    </StoreContext.Provider>
+  return createElement(
+    StoreContext.Provider,
+    { value: { state, dispatch } },
+    children
   );
 };
 

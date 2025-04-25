@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
-import { createContact, updateContact } from "src/api/Contacts";
-import ContactForm from "src/components/ContactForm";
+import { createContact, updateContact } from "../api/Contacts";
+import ContactForm from "../components/ContactForm";
 
 const AddEditContact = () => {
   const { id } = useParams();

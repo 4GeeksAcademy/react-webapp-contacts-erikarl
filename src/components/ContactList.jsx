@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
-import { StoreContext } from "../Store";
-import ContactCard from "./ContactCard";
+import { StoreContext } from "../store";
+import ContactForm from "./ContactForm";
 import { deleteContact } from "../api/Contacts";
 
 const ContactList = () => {
@@ -30,7 +30,7 @@ const ContactList = () => {
   return (
     <div className="contact-list grid gap-4 p-4">
       {contacts.map((contact) => (
-        <ContactCard
+        <ContactForm
           key={contact.id}
           contact={contact}
           onDelete={handleDelete}
