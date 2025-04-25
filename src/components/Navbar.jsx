@@ -4,16 +4,11 @@ export const Navbar = () => {
 
 	return (
 		<nav className="navbar navbar-light bg-light">
-			<div className="container">
-				<Link to="/">
-					<span className="navbar-brand mb-0 h1">React Boilerplate</span>
-				</Link>
-				<div className="ml-auto">
-					<Link to="/demo">
-						<button className="btn btn-primary">Check the Context in action</button>
-					</Link>
-				</div>
-			</div>
+  			<div className="ms-auto">  {/* ← Empuja el botón a la derecha */}
+    			<Link to="/demo" className="me-5">
+      			<button className="btn btn-success">Add new contact</button>
+    			</Link>
+  			</div>
 		</nav>
 	);
 };
