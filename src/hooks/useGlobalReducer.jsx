@@ -1,10 +1,11 @@
 import { useContext, useReducer, createContext } from "react";
-import storeReducer, { initialStore } from "../store";
+import { storeReducer, InitialState } from "../store";
 
-const StoreContext = createContext();
+// Exporta el contexto para que otros componentes puedan usarlo
+export const StoreContext = createContext();
 
 export function StoreProvider({ children }) {
-  const [store, dispatch] = useReducer(storeReducer, initialStore());
+  const [store, dispatch] = useReducer(storeReducer, InitialState);
   
   return (
     <StoreContext.Provider value={{ store, dispatch }}>

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
-import { getContacts } from "../api/Contacts";
+import { getContacts } from "../Functions.jsx";
 import ContactList from "../components/ContactList";
 import Navbar from "../components/Navbar";
 
@@ -16,6 +16,9 @@ const Home = () => {
       dispatch({ type: "SET_LOADING", payload: true });
       try {
         const contactsData = await getContacts();
+
+        console.log (contactsData)
+        
         dispatch({ type: "SET_CONTACTS", payload: contactsData });
       } catch (err) {
         dispatch({ type: "SET_ERROR", payload: err.message });

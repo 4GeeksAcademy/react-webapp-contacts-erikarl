@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer";
-import { createContact, updateContact } from "../api/Contacts";
+import { createContact, updateContact } from "../Functions.jsx";
 import ContactForm from "../components/ContactForm";
 
 const AddEditContact = () => {
@@ -11,13 +11,12 @@ const AddEditContact = () => {
   const { contacts } = store;
 
   const [formData, setFormData] = React.useState({
-    full_name: "",
+    name: "",
     email: "",
     phone: "",
     address: ""
   });
 
-  // Cargar datos si estamos editando
   useEffect(() => {
     if (id && contacts?.length > 0) {
       const contact = contacts.find(c => c.id === parseInt(id));
@@ -34,13 +33,12 @@ const AddEditContact = () => {
     e.preventDefault();
     try {
       dispatch({ type: "SET_LOADING", payload: true });
-      
       if (id) {
         await updateContact(id, formData);
       } else {
         await createContact(formData);
       }
-      navigate("/"); // Navegación desde la página
+      navigate("/");
     } catch (error) {
       dispatch({ type: "SET_ERROR", payload: error.message });
     } finally {
@@ -49,25 +47,26 @@ const AddEditContact = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-6">
-        {id ? "Edit Contact" : "Add New Contact"}
-      </h1>
-      
-      <ContactForm
-        formData={formData}
-        isEditing={!!id}
-        onChange={handleChange}
-        onSubmit={handleSubmit}
-      />
-      
-      <button 
-        onClick={() => navigate("/")}
-        className="mt-4 text-blue-500 hover:text-blue-700"
-      >
-        ← Back to contacts
-      </button>
-    </div>
+    <div className="min-h-screen bg-gray-100 flex justify-center text-center">
+        <h1 className="text-2xl font-bold mb-6 text-center">
+          {id ? "Editar Contacto" : "Crear Nuevo Contacto"}
+        </h1>
+
+        <ContactForm
+          initialData={formData}
+          isEditing={!!id}
+          onSuccess={() => navigate("/")}
+        />
+
+        <div className="d-flex justify-content-start ms-5">
+        <button 
+          onClick={() => navigate("/")}
+          className="mt-4 text-blue-500 hover:text-blue-700"
+        >
+          ← Volver a mi lista de contactos
+        </button>
+        </div>
+      </div>
   );
 };
 

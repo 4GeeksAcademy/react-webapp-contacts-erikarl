@@ -1,45 +1,126 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React, { useState } from "react";
+import useGlobalReducer from "../hooks/useGlobalReducer";
+import { actions } from "../store"; 
 
 const ContactForm = ({ 
-  formData, 
-  isEditing, 
-  onChange, 
-  onSubmit 
+  initialData = {
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+  },
+  isEditing = false,
+  onSuccess
 }) => {
-  return (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Full Name
-        </label>
-        <input
-          type="text"
-          name="full_name"
-          value={formData.full_name}
-          onChange={onChange}
-          className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-          required
-        />
-      </div>
+  const { dispatch } = useGlobalReducer(); 
+  const [formData, setFormData] = useState(initialData);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-      {/* Repetir para email, phone y address */}
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
-      <button
-        type="submit"
-        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
-      >
-        {isEditing ? "Update Contact" : "Create Contact"}
-      </button>
-    </form>
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    try {
+      // Validación básica primero
+      if (!formData.name || !formData.email) {
+        throw new Error("Nombre y email son campos obligatorios");
+      }
+  
+      // Preparamos los datos para la API con protección contra undefined
+      const apiData = {
+        name: formData.name?.trim() || "", // <-- Uso del optional chaining
+        email: formData.email?.trim() || "",
+        ...(formData.phone && { phone: formData.phone.trim() }),
+        ...(formData.address && { address: formData.address.trim() })
+      };
+  
+      console.log("Datos a enviar:", apiData); // Para depuración
+  
+      if (isEditing) {
+        await actions.updateContact(initialData.id, apiData, dispatch);
+      } else {
+        await actions.addContact(apiData, dispatch);
+      }
+      onSuccess?.();
+    } catch (error) {
+      alert(`Error: ${error.message}`);
+      console.error("Error al procesar:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+
+  return (  
+    <div className="d-flex justify-content-center">
+  <form onSubmit={handleSubmit} className="w-100" style={{ maxWidth: "500px" }}>
+    <div className="mb-3 mt-4"> {/* Contenedor con margen inferior */}
+      <label htmlFor="name" className="form-label">Nombre completo</label>
+      <input
+        type="text"
+        id="name"
+        name="name"
+        value={formData.name}
+        onChange={handleChange}
+        className="form-control"
+        required
+      />
+    </div>
+
+    <div className="mb-3">
+      <label htmlFor="email" className="form-label">Email</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        value={formData.email}
+        onChange={handleChange}
+        className="form-control"
+        required
+      />
+    </div>
+
+    <div className="mb-3">
+      <label htmlFor="phone" className="form-label">Teléfono</label>
+      <input
+        type="tel"
+        id="phone"
+        name="phone"
+        value={formData.phone}
+        onChange={handleChange}
+        className="form-control"
+      />
+    </div>
+
+    <div className="mb-4">
+      <label htmlFor="address" className="form-label">Dirección</label>
+      <input
+        type="text"
+        id="address"
+        name="address"
+        value={formData.address}
+        onChange={handleChange}
+        className="form-control"
+      />
+    </div>
+
+    <button
+      type="submit"
+      disabled={isSubmitting}
+      className={`btn w-100 mt-3 ${
+        isSubmitting ? "btn-secondary" : "btn-primary"
+      }`}
+    >
+      {isSubmitting ? 'Procesando...' : isEditing ? 'Actualizar contacto' : 'Crear contacto'}
+    </button>
+  </form>
+</div>
   );
-};
-
-ContactForm.propTypes = {
-  formData: PropTypes.object.isRequired,
-  isEditing: PropTypes.bool.isRequired,
-  onChange: PropTypes.func.isRequired,
-  onSubmit: PropTypes.func.isRequired
 };
 
 export default ContactForm;
