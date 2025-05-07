@@ -1,20 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
 import { actions } from "../store"; 
+import { useParams } from "react-router-dom";
 
 const ContactForm = ({ 
-  initialData = {
+  isEditing = false,
+  onSuccess
+}) => {
+  const { dispatch, store } = useGlobalReducer(); 
+  const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
     address: "",
-  },
-  isEditing = false,
-  onSuccess
-}) => {
-  const { dispatch } = useGlobalReducer(); 
-  const [formData, setFormData] = useState(initialData);
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { id } = useParams();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -42,7 +43,7 @@ const ContactForm = ({
       console.log("Datos a enviar:", apiData); // Para depuración
   
       if (isEditing) {
-        await actions.updateContact(initialData.id, apiData, dispatch);
+        await actions.updateContact (formData.id, apiData, dispatch);
       } else {
         await actions.addContact(apiData, dispatch);
       }
@@ -55,6 +56,12 @@ const ContactForm = ({
     }
   };
   
+  useEffect(() => {
+      if (id && store.contacts?.length > 0) {
+        const contact = store.contacts.find(c => c.id === parseInt(id));
+        if (contact) setFormData(contact);
+      }
+    }, [id, store.contacts]);
 
   return (  
     <div className="d-flex justify-content-center">
